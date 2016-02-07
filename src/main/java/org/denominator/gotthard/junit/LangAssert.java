@@ -1,11 +1,13 @@
-package org.denominator.junit;
-
-import org.junit.Assert;
+package org.denominator.gotthard.junit;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public final class LangAssert {
+    private LangAssert() {
+        throw new AssertionError();
+    }
+
     public static void assertUtilityClass(Class<?> clazz) {
         try {
             final Constructor<?> constructor = clazz.getDeclaredConstructor();

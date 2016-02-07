@@ -1,7 +1,7 @@
 package org.denominator.gotthard.json;
 
 import org.denominator.gotthard.collection.Creator;
-import org.denominator.junit.LangAssert;
+import org.denominator.gotthard.junit.LangAssert;
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Before;

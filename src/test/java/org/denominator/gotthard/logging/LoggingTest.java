@@ -1,6 +1,6 @@
 package org.denominator.gotthard.logging;
 
-import org.denominator.junit.LangAssert;
+import org.denominator.gotthard.junit.LangAssert;
 import org.junit.Test;
 
 import java.io.IOException;

@@ -1,7 +1,6 @@
-package org.denominator.lang;
+package org.denominator.gotthard.lang;
 
-import org.denominator.gotthard.lang.MessageFormatter;
-import org.denominator.junit.LangAssert;
+import org.denominator.gotthard.junit.LangAssert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

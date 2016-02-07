@@ -1,6 +1,6 @@
 package org.denominator.gotthard.json;
 
-import org.denominator.junit.LangAssert;
+import org.denominator.gotthard.junit.LangAssert;
 import org.junit.Assert;
 import org.junit.Test;
 
