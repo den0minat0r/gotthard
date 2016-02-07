@@ -1,12 +1,9 @@
 package org.denominator.gotthard.json;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
-public final class DefaultJsonObjectFactory implements JsonObjectFactory {
+final class DefaultJsonObjectFactory implements JsonObjectFactory {
     @Override
     public List<Object> listInstance() {
         return new ArrayList<>();
@@ -15,5 +12,29 @@ public final class DefaultJsonObjectFactory implements JsonObjectFactory {
     @Override
     public Map<String, Object> mapInstance() {
         return new HashMap<>();
+    }
+}
+
+final class OrderedJsonObjectFactory implements JsonObjectFactory {
+    @Override
+    public Map<String, Object> mapInstance() {
+        return new LinkedHashMap<>();
+    }
+
+    @Override
+    public List<Object> listInstance() {
+        return new ArrayList<>();
+    }
+}
+
+final class SortedJsonObjectFactory implements JsonObjectFactory {
+    @Override
+    public Map<String, Object> mapInstance() {
+        return new TreeMap<>();
+    }
+
+    @Override
+    public List<Object> listInstance() {
+        return new ArrayList<>();
     }
 }

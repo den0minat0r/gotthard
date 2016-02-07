@@ -1,6 +1,7 @@
 package org.denominator.gotthard.json;
 
 import org.denominator.gotthard.collection.Creator;
+import org.denominator.junit.LangAssert;
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,7 +17,27 @@ public class DefaultJsonParserTest {
 
     @Before
     public void initParser() {
-        jsonParser = new Json().newParser();
+        jsonParser = Json.defaultParser();
+    }
+
+    @Test
+    public void utilityConstructor() {
+        LangAssert.assertUtilityClass(Json.class);
+    }
+
+    @Test
+    public void defaultParser(){
+        assertEquals(Creator.map("a", false), Json.parse("{\"a\" : false}"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void noObjectFactory() {
+        new DefaultJsonParser(null, new DefaultPrimitivesParser());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void noPrimitiveParser() {
+        new DefaultJsonParser(new DefaultJsonObjectFactory(), null);
     }
 
     @Test
@@ -100,25 +121,22 @@ public class DefaultJsonParserTest {
 
     @Test
     public void nestedMapsInLists() {
-        @SuppressWarnings("unchecked")
-        List<?> list = (List<?>) jsonParser.parse("[{\"a\":{}},[\"b\"]]");
+        List<?> list = jsonParser.parse("[{\"a\":{}},[\"b\"]]");
 
         assertEquals(Arrays.asList(Creator.map("a", Creator.map())
-                , Arrays.asList("b")), list);
+                , Collections.singletonList("b")), list);
     }
 
     @Test
     public void specialCharacters() {
-        @SuppressWarnings("unchecked")
-        String s = (String) jsonParser.parse("\"\\\"\\\\\\/\\b\\f\\n\\r\\t\"");
+        String s = jsonParser.parse("\"\\\"\\\\\\/\\b\\f\\n\\r\\t\"");
 
         assertEquals(s, "\"\\/\b\f\n\r\t");
     }
 
     @Test
     public void unicodeCharacters() {
-        @SuppressWarnings("unchecked")
-        String s = (String) jsonParser.parse("\"\\u0021\\u0023\"");
+        String s = jsonParser.parse("\"\\u0021\\u0023\"");
 
         assertEquals(s, "!#");
     }
@@ -134,7 +152,7 @@ public class DefaultJsonParserTest {
             try {
                 Object parsed = jsonParser.parse(s);
                 Assert.fail("Expected parsing exception. Received: " + parsed);
-            } catch (JsonParserException e) {
+            } catch (JsonParserException ignored) {
 
             }
         }
@@ -148,7 +166,7 @@ public class DefaultJsonParserTest {
             try {
                 Object parsed = jsonParser.parse(s);
                 Assert.fail("Expected parsing exception. Received: " + parsed);
-            } catch (JsonParserException e) {
+            } catch (JsonParserException ignored) {
 
             }
         }
@@ -182,7 +200,7 @@ public class DefaultJsonParserTest {
     @Test
     public void testObjectFactory() {
         JsonObjectFactory factory = EasyMock.createStrictMock(JsonObjectFactory.class);
-        JsonParser parser = new Json().jsonObjectFactory(factory).newParser();
+        JsonParser parser = new DefaultJsonParser(factory, new DefaultPrimitivesParser());
 
         List<Object> list = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
@@ -200,7 +218,7 @@ public class DefaultJsonParserTest {
     @Test
     public void testCustomParsing() {
         JsonPrimitivesParser primitivesParser = EasyMock.createStrictMock(JsonPrimitivesParser.class);
-        JsonParser parser = new Json().jsonPrimitivesParser(primitivesParser).newParser();
+        JsonParser parser = new DefaultJsonParser(new DefaultJsonObjectFactory(), primitivesParser);
 
         char[] floatingChars = "1.2".toCharArray();
         char[] integerChars = "3".toCharArray();

@@ -6,8 +6,6 @@ final class Yylex {
      * This character denotes the end of file
      */
     public static final int YYEOF = -1;
-    private static final LongParser longParser = new LongParser();
-
     private final JsonPrimitivesParser primitivesParser;
     /**
      * lexical states
@@ -51,21 +49,6 @@ final class Yylex {
                     "\1\30";
 
     private static final int[] ZZ_ACTION = zzUnpack(ZZ_ACTION_PACKED_0);
-
-    private static int[] zzUnpack(String packed) {
-        int[] result = new int[45];
-        int i = 0;       /* index in packed string  */
-        int j = 0;  /* index in unpacked array */
-        int l = packed.length();
-        while (i < l) {
-            int count = packed.charAt(i++);
-            int value = packed.charAt(i++);
-            do {
-                result[j++] = value;
-            } while (--count > 0);
-        }
-        return result;
-    }
 
     /**
      * Translates a state to a row index in the transition table
@@ -155,27 +138,29 @@ final class Yylex {
             -1, -1, -1, -1, -1
     };
 
-    private static final int[] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
     private static final String ZZ_ATTRIBUTE_PACKED_0 =
             "\2\0\1\11\3\1\1\11\3\1\6\11\2\1\1\11" +
                     "\5\0\10\11\1\0\1\1\1\0\1\1\4\0\2\11" +
                     "\2\0\1\11";
 
-    private static int[] zzUnpackAttribute() {
+    private static final int[] ZZ_ATTRIBUTE = zzUnpack(ZZ_ATTRIBUTE_PACKED_0);
+
+    private static int[] zzUnpack(String packed) {
         int[] result = new int[45];
         int i = 0;       /* index in packed string  */
         int j = 0;  /* index in unpacked array */
-        int l = ZZ_ATTRIBUTE_PACKED_0.length();
+        int l = packed.length();
         while (i < l) {
-            int count = ZZ_ATTRIBUTE_PACKED_0.charAt(i++);
-            int value = ZZ_ATTRIBUTE_PACKED_0.charAt(i++);
+            int count = packed.charAt(i++);
+            int value = packed.charAt(i++);
             do {
                 result[j++] = value;
             } while (--count > 0);
         }
         return result;
     }
+
 
     /**
      * the current lexical state
@@ -206,9 +191,9 @@ final class Yylex {
     private final StringBuilder sb = new StringBuilder();
 
 
-    Yylex(char[] aBuffer, JsonPrimitivesParser aParser) {
-        zzBuffer = aBuffer;
-        primitivesParser = aParser;
+    Yylex(char[] buffer, JsonPrimitivesParser parser) {
+        zzBuffer = buffer;
+        primitivesParser = parser;
     }
 
     int getPosition() {
@@ -216,7 +201,7 @@ final class Yylex {
     }
 
     @SuppressWarnings("fallthrough")
-    Yytoken yylex() throws JsonParserException {
+    Token yylex() throws JsonParserException {
         int zzInput;
         int zzAction;
 
@@ -275,18 +260,18 @@ final class Yylex {
                 case 27:
                     break;
                 case 6: {
-                    return Yytoken.RightBrace;
+                    return Token.RightBrace;
                 }
                 case 23: {
                     Boolean val = Boolean.valueOf(new String(zzBuffer, zzStartRead, zzMarkedPos - zzStartRead));
-                    return new Yytoken(val);
+                    return new Token(val);
                 }
                 case 22: {
-                    return new Yytoken(null);
+                    return new Token(null);
                 }
                 case 13: {
                     zzLexicalState = YYINITIAL;
-                    return new Yytoken(sb.toString());
+                    return new Token(sb.toString());
                 }
                 case 12: {
                     sb.append('\\');
@@ -294,14 +279,14 @@ final class Yylex {
                 case 32:
                     break;
                 case 21: {
-                    return new Yytoken(primitivesParser.parseFloating(zzBuffer, zzStartRead, zzMarkedPos - zzStartRead));
+                    return new Token(primitivesParser.parseFloating(zzBuffer, zzStartRead, zzMarkedPos - zzStartRead));
                 }
                 case 1: {
                     throw new JsonParserException(String.format("Unexpected character [%d,'%c'], last position %d."
                             , yychar, (char) yychar, zzMarkedPos));
                 }
                 case 8: {
-                    return Yytoken.RightSquare;
+                    return Token.RightSquare;
                 }
                 case 19: {
                     sb.append('\r');
@@ -314,7 +299,7 @@ final class Yylex {
                 case 37:
                     break;
                 case 10: {
-                    return Yytoken.Colon;
+                    return Token.Colon;
                 }
                 case 14: {
                     sb.append('"');
@@ -322,7 +307,7 @@ final class Yylex {
                 case 39:
                     break;
                 case 5: {
-                    return Yytoken.LeftBrace;
+                    return Token.LeftBrace;
                 }
                 case 17: {
                     sb.append('\f');
@@ -330,7 +315,7 @@ final class Yylex {
                 case 41:
                     break;
                 case 24: {
-                    int ch = (int) longParser.parseHexLong(zzBuffer, zzStartRead + 2, zzMarkedPos - zzStartRead - 2);
+                    int ch = (int) LongParser.parseHexLong(zzBuffer, zzStartRead + 2, zzMarkedPos - zzStartRead - 2);
                     sb.append((char) ch);
                 }
                 case 42:
@@ -341,10 +326,10 @@ final class Yylex {
                 case 43:
                     break;
                 case 7: {
-                    return Yytoken.LeftSquare;
+                    return Token.LeftSquare;
                 }
                 case 2: {
-                    return new Yytoken(primitivesParser.parseInteger(zzBuffer, zzStartRead, zzMarkedPos - zzStartRead));
+                    return new Token(primitivesParser.parseInteger(zzBuffer, zzStartRead, zzMarkedPos - zzStartRead));
                 }
                 case 18: {
                     sb.append('\n');
@@ -352,11 +337,11 @@ final class Yylex {
                 case 46:
                     break;
                 case 9: {
-                    return Yytoken.Comma;
+                    return Token.Comma;
                 }
                 default:
                     if (zzInput == YYEOF && zzStartRead == zzCurrentPos) {
-                        return Yytoken.Eof;
+                        return Token.Eof;
                     }
             }
         }

@@ -6,12 +6,13 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
 public class CreatorTest {
     @Test
-    public void utilityConstructor() throws NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void utilityConstructor() {
         LangAssert.assertUtilityClass(Creator.class);
     }
 
@@ -27,13 +28,14 @@ public class CreatorTest {
 
     @Test
     public void testMaps() {
-        assertEquals(Creator.map("1", 1, "2", 2, "3", 3), Creator.map("1", 1, "2", 2, "3", 3));
-        assertEquals(Creator.set("1"), Creator.set("1"));
-        assertEquals(Creator.sortedSet("1", "2"), new TreeSet<>(Arrays.asList("2", "1")));
+        assertEquals(Creator.map("1", 1, "2", 2, "3", 3, "4", 4, "5", 5)
+                , Arrays.asList(1,2,3,4,5).stream().collect(Collectors.toMap(Object::toString, x->x)));
     }
 
     @Test
     public void testSets() {
+        assertEquals(Creator.set("1"), Creator.set("1"));
+        assertEquals(Creator.sortedSet("1", "2"), new TreeSet<>(Arrays.asList("2", "1")));
         assertEquals(Creator.list("b", "c", "g", "3")
                 , new ArrayList<>(Creator.linkedSet("b", "c", "g", "3")));
     }

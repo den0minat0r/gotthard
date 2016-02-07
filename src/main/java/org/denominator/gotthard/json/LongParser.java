@@ -1,13 +1,13 @@
 package org.denominator.gotthard.json;
 
 final class LongParser {
-    private final int MAX_LONG_LENGTH = String.valueOf(Long.MAX_VALUE).length();
-    private final long MULTIPLIERS[] = new long[MAX_LONG_LENGTH];
+    private static final int MAX_LONG_LENGTH = String.valueOf(Long.MAX_VALUE).length();
+    private static final long MULTIPLIERS[] = new long[MAX_LONG_LENGTH];
 
-    private final int MAX_HEX_LONG_LENGTH = Long.toHexString(Long.MAX_VALUE).length();
-    private final long HEX_MULTIPLIERS[] = new long[MAX_HEX_LONG_LENGTH];
+    private static final int MAX_HEX_LONG_LENGTH = Long.toHexString(Long.MAX_VALUE).length();
+    private static final long HEX_MULTIPLIERS[] = new long[MAX_HEX_LONG_LENGTH];
 
-    LongParser() {
+    static {
         MULTIPLIERS[0] = 1;
         for (int i = 1; i < MULTIPLIERS.length; i++) {
             MULTIPLIERS[i] = MULTIPLIERS[i - 1] * 10;
@@ -19,16 +19,19 @@ final class LongParser {
         }
     }
 
-    long parseLong(char[] aBuf, int offset, int length) {
+    static long parseLong(char[] aBuf, int offset, int length) {
         return parseLong(aBuf, offset, length, false);
     }
 
-    long parseHexLong(char[] aBuf, int offset, int length) {
+    static long parseHexLong(char[] aBuf, int offset, int length) {
         return parseLong(aBuf, offset, length, true);
     }
 
-    @SuppressWarnings({"ConstantConditions"})
-    private long parseLong(char[] aBuf, int offset, int length, boolean isHex) {
+    private LongParser() {
+        throw new AssertionError();
+    }
+
+    private static long parseLong(char[] aBuf, int offset, int length, boolean isHex) {
         boolean negative = false;
 
         long multipliers[] = (isHex ? HEX_MULTIPLIERS : MULTIPLIERS);

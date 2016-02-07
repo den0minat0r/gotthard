@@ -1,38 +1,31 @@
 package org.denominator.gotthard.json;
 
+import org.denominator.junit.LangAssert;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 
 public class LongParserTest {
 
-    private LongParser longParser;
-
-    @Before
-    public void init() {
-        longParser = new LongParser();
-    }
-
     private long parse(String s) {
         char[] buf = s.toCharArray();
-        long res1 = longParser.parseLong(buf, 0, buf.length);
+        long res1 = LongParser.parseLong(buf, 0, buf.length);
 
         char[] buf1 = new char[buf.length + 1];
         Arrays.fill(buf1, 'x');
         System.arraycopy(buf, 0, buf1, 1, buf.length);
-        long res2 = longParser.parseLong(buf1, 1, buf.length);
+        long res2 = LongParser.parseLong(buf1, 1, buf.length);
 
         char[] buf2 = new char[buf.length + 1];
         Arrays.fill(buf2, 'x');
         System.arraycopy(buf, 0, buf2, 0, buf.length);
-        long res3 = longParser.parseLong(buf2, 0, buf.length);
+        long res3 = LongParser.parseLong(buf2, 0, buf.length);
 
         char[] buf3 = new char[buf.length + 2];
         Arrays.fill(buf3, 'x');
         System.arraycopy(buf, 0, buf3, 1, buf.length);
-        long res4 = longParser.parseLong(buf3, 1, buf.length);
+        long res4 = LongParser.parseLong(buf3, 1, buf.length);
 
         long res5 = Long.parseLong(s);
 
@@ -42,6 +35,11 @@ public class LongParserTest {
         Assert.assertEquals(res4, res5);
 
         return res1;
+    }
+
+    @Test
+    public void utilityConstructor() {
+        LangAssert.assertUtilityClass(LongParser.class);
     }
 
     @Test
@@ -85,7 +83,7 @@ public class LongParserTest {
             try {
                 long result = parse(s);
                 Assert.fail("Expected exception. Received: " + result);
-            } catch (JsonParserException e) {
+            } catch (JsonParserException ignored) {
 
             }
         }
@@ -99,32 +97,11 @@ public class LongParserTest {
             try {
                 long result = parseHex(s);
                 Assert.fail("Expected exception. Received: " + result);
-            } catch (JsonParserException e) {
+            } catch (JsonParserException ignored) {
 
             }
         }
     }
-
-//    @Test
-//    public void speedImprovement () {
-//        final int N = 100000;
-//
-//        String s = "123456789";
-//        final long start1 = System.nanoTime();
-//        for (int i = 0;i < N;i++) {
-//            Long.parseLong(s);
-//        }
-//        final long end1 = System.nanoTime();
-//
-//        char[] buf = s.toCharArray();
-//        final long start2 = System.nanoTime();
-//        for (int i = 0;i < N;i++) {
-//            longParser.parseLong(buf,0,buf.length);
-//        }
-//        final long end2 = System.nanoTime();
-//
-//        Assert.assertTrue ((end1 - start1) + " vs. " + (end2 - start2), 1.5*(end1 - start1) > (end2 - start2));
-//    }
 
     @Test
     public void hexParser() {
@@ -137,6 +114,6 @@ public class LongParserTest {
 
     private long parseHex(String s) {
         char[] buf = s.toCharArray();
-        return longParser.parseHexLong(buf, 0, buf.length);
+        return LongParser.parseHexLong(buf, 0, buf.length);
     }
 }

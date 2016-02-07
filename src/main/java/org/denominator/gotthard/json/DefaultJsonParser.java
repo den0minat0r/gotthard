@@ -1,6 +1,9 @@
 package org.denominator.gotthard.json;
 
-import java.util.*;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 
 final class DefaultJsonParser implements JsonParser {
@@ -48,7 +51,7 @@ final class DefaultJsonParser implements JsonParser {
         final Yylex lexer = new Yylex(buffer, primitivesParser);
 
         int status = S_INIT;
-        Yytoken token;
+        Token token;
 
         final Deque<Integer> statusStack = new LinkedList<>();
         final Deque<Object> valueStack = new LinkedList<>();
@@ -59,17 +62,17 @@ final class DefaultJsonParser implements JsonParser {
             switch (status) {
                 case S_INIT:
                     switch (token.type) {
-                        case Yytoken.TYPE_VALUE:
+                        case Token.TYPE_VALUE:
                             status = S_IN_FINISHED_VALUE;
                             statusStack.addFirst(status);
                             valueStack.addFirst(token.value);
                             break;
-                        case Yytoken.TYPE_LEFT_BRACE:
+                        case Token.TYPE_LEFT_BRACE:
                             status = S_IN_OBJECT;
                             statusStack.addFirst(status);
                             valueStack.addFirst(jsonObjectFactory.mapInstance());
                             break;
-                        case Yytoken.TYPE_LEFT_SQUARE:
+                        case Token.TYPE_LEFT_SQUARE:
                             status = S_IN_ARRAY;
                             statusStack.addFirst(status);
                             valueStack.addFirst(jsonObjectFactory.listInstance());
@@ -80,7 +83,7 @@ final class DefaultJsonParser implements JsonParser {
                     break;
 
                 case S_IN_FINISHED_VALUE:
-                    if (token.type == Yytoken.TYPE_EOF) {
+                    if (token.type == Token.TYPE_EOF) {
                         return valueStack.removeFirst();
                     } else {
                         throw new JsonParserException(String.format(INVALID_TOKEN, String.valueOf(token), lexer.getPosition()));
@@ -88,9 +91,9 @@ final class DefaultJsonParser implements JsonParser {
 
                 case S_IN_OBJECT:
                     switch (token.type) {
-                        case Yytoken.TYPE_COMMA:
+                        case Token.TYPE_COMMA:
                             break;
-                        case Yytoken.TYPE_VALUE:
+                        case Token.TYPE_VALUE:
                             if (token.value instanceof String) {
                                 String key = (String) token.value;
                                 valueStack.addFirst(key);
@@ -100,7 +103,7 @@ final class DefaultJsonParser implements JsonParser {
                                 status = S_IN_ERROR;
                             }
                             break;
-                        case Yytoken.TYPE_RIGHT_BRACE:
+                        case Token.TYPE_RIGHT_BRACE:
                             if (valueStack.size() > 1) {
                                 statusStack.removeFirst();
                                 valueStack.removeFirst();
@@ -117,16 +120,16 @@ final class DefaultJsonParser implements JsonParser {
 
                 case S_PASSED_PAIR_KEY:
                     switch (token.type) {
-                        case Yytoken.TYPE_COLON:
+                        case Token.TYPE_COLON:
                             break;
-                        case Yytoken.TYPE_VALUE:
+                        case Token.TYPE_VALUE:
                             statusStack.removeFirst();
                             String key = (String) valueStack.removeFirst();
                             Map<String, Object> parent = toMap(valueStack.getFirst());
                             parent.put(key, token.value);
                             status = statusStack.getFirst();
                             break;
-                        case Yytoken.TYPE_LEFT_SQUARE:
+                        case Token.TYPE_LEFT_SQUARE:
                             statusStack.removeFirst();
                             key = (String) valueStack.removeFirst();
                             parent = toMap(valueStack.getFirst());
@@ -136,7 +139,7 @@ final class DefaultJsonParser implements JsonParser {
                             statusStack.addFirst(status);
                             valueStack.addFirst(newArray);
                             break;
-                        case Yytoken.TYPE_LEFT_BRACE:
+                        case Token.TYPE_LEFT_BRACE:
                             statusStack.removeFirst();
                             key = (String) valueStack.removeFirst();
                             parent = toMap(valueStack.getFirst());
@@ -153,13 +156,13 @@ final class DefaultJsonParser implements JsonParser {
 
                 case S_IN_ARRAY:
                     switch (token.type) {
-                        case Yytoken.TYPE_COMMA:
+                        case Token.TYPE_COMMA:
                             break;
-                        case Yytoken.TYPE_VALUE:
+                        case Token.TYPE_VALUE:
                             List<Object> val = toList(valueStack.getFirst());
                             val.add(token.value);
                             break;
-                        case Yytoken.TYPE_RIGHT_SQUARE:
+                        case Token.TYPE_RIGHT_SQUARE:
                             if (valueStack.size() > 1) {
                                 statusStack.removeFirst();
                                 valueStack.removeFirst();
@@ -168,7 +171,7 @@ final class DefaultJsonParser implements JsonParser {
                                 status = S_IN_FINISHED_VALUE;
                             }
                             break;
-                        case Yytoken.TYPE_LEFT_BRACE:
+                        case Token.TYPE_LEFT_BRACE:
                             val = toList(valueStack.getFirst());
                             Map<String, Object> newObject = jsonObjectFactory.mapInstance();
                             val.add(newObject);
@@ -176,7 +179,7 @@ final class DefaultJsonParser implements JsonParser {
                             statusStack.addFirst(status);
                             valueStack.addFirst(newObject);
                             break;
-                        case Yytoken.TYPE_LEFT_SQUARE:
+                        case Token.TYPE_LEFT_SQUARE:
                             val = toList(valueStack.getFirst());
                             List<Object> newArray = jsonObjectFactory.listInstance();
                             val.add(newArray);
@@ -189,7 +192,7 @@ final class DefaultJsonParser implements JsonParser {
                     }
                     break;
             }
-        } while (token.type != Yytoken.TYPE_EOF && status != S_IN_ERROR);
+        } while (token.type != Token.TYPE_EOF && status != S_IN_ERROR);
 
         throw new JsonParserException(String.format(INVALID_TOKEN, String.valueOf(token), lexer.getPosition()));
     }

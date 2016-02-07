@@ -1,6 +1,5 @@
 package org.denominator.gotthard.json;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +22,7 @@ final class StaticJsonSerializer {
 
         private final Class<?> clazz;
 
-        private SerializationType(Class<?> clazz) {
+        SerializationType(Class<?> clazz) {
             this.clazz = clazz;
         }
 
@@ -77,8 +76,6 @@ final class StaticJsonSerializer {
             case Boolean:
                 sb.append(object.toString());
                 break;
-            default:
-                throw new AssertionError();
         }
     }
 
